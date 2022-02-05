@@ -1,5 +1,7 @@
 # parser-vacancies-Headhunter <img src="../../../../fluidicon.png" height="32"/>
 
+## Steps:
+     pyinstaller job_main.py -F -w --i=favicon.ico
 
 <img src="show.jpg" height="400">
 
