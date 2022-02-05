@@ -72,7 +72,6 @@ class MyWin(QtWidgets.QMainWindow):
                     # url_id = f'https://api.hh.ru/employers/{company_id}'
                     # count_vacancies = ('\n🚷   Всего количество вакансий у компании: ' + str(
                     #     requests.get(url_id, headers).json().get('open_vacancies', {})) + '\n')
-
                     requirement = str(index['snippet']['requirement']).replace(
                         '<highlighttext>', '*')
                     requirement = str(requirement).replace('</highlighttext>', '*')
@@ -82,7 +81,6 @@ class MyWin(QtWidgets.QMainWindow):
                     information = (f'\n🐵   Отрывок из требований по вакансии: {requirement}\n🐼   '
                                    f'Отрывок из обязанностей по вакансии: {responsibility}'
                                    f'\n' + count_vacancies)
-
                 if salary:
                     from_salary = salary['from']
                     to_salary = salary['to']
@@ -107,7 +105,9 @@ class MyWin(QtWidgets.QMainWindow):
                     print(output)
                     self.ui.textBrowser.append(output)
                     text.write(output.center(120, '*') + '\n')
+                # self.ui.textBrowser.append("<a name=\"scroll\" href=\"\">۩</a>")
                 text.close()
+            self.ui.textBrowser.scrollToAnchor("scroll")
         except OSError as error:
             print(f'Статус: проблемы с доступом в интернет\n{error}')
             self.ui.textBrowser.append(
