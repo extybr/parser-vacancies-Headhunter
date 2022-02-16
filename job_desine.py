@@ -1,20 +1,23 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from information import region, categories
 
 
 class Ui_MainWindow(object):
-    def setup_ui(self, MainWindow):
+    def setup_ui(self, MainWindow) -> None:
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1101, 867)
         # MainWindow.showMaximized()
         MainWindow.setMinimumSize(QtCore.QSize(1101, 867))
         MainWindow.setMaximumSize(QtCore.QSize(1101, 867))
         MainWindow.setStyleSheet("background-color: rgb(170, 255, 127);")
+        MainWindow.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('favicon.ico')))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setIcon(QtGui.QIcon(QtGui.QPixmap('search.png')))
         self.pushButton.setGeometry(QtCore.QRect(470, 125, 100, 35))
         font = QtGui.QFont()
-        font.setPointSize(20)
+        font.setPointSize(18)
         font.setBold(True)
         # font.setWeight(75)
         self.pushButton.setFont(font)
@@ -60,7 +63,6 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.label_8.setFont(font)
         self.label_8.setObjectName("label_8")
-
         self.lcdNumber = QtWidgets.QLCDNumber(self.centralwidget)
         self.lcdNumber.setGeometry(QtCore.QRect(40, 120, 90, 40))
         font.setPointSize(24)
@@ -83,13 +85,15 @@ class Ui_MainWindow(object):
         self.lineEdit_2.setFont(font)
         self.lineEdit_2.setStyleSheet("background-color: rgb(170, 255, 255);")
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.lineEdit_2.setText('102')
+        self.lineEdit_2.setText('113')
+        self.lineEdit_2.setToolTip(region)
         self.lineEdit_3 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_3.setGeometry(QtCore.QRect(40, 35, 45, 30))
         self.lineEdit_3.setFont(font)
         self.lineEdit_3.setStyleSheet("background-color: rgb(170, 255, 255);")
         self.lineEdit_3.setObjectName("lineEdit_3")
         self.lineEdit_3.setText('')
+        self.lineEdit_3.setToolTip(categories)
         self.lineEdit_4 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_4.setGeometry(QtCore.QRect(1000, 120, 45, 30))
         self.lineEdit_4.setFont(font)
@@ -127,7 +131,7 @@ class Ui_MainWindow(object):
         self.retranslate_ui(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslate_ui(self, MainWindow):
+    def retranslate_ui(self, MainWindow) -> None:
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Поисковик вакансий на hh.ru"))
         self.pushButton.setText(_translate("MainWindow", "поиск"))
@@ -139,4 +143,3 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Период дней"))
         self.label_7.setText(_translate("MainWindow", "Страница"))
         self.label_8.setText(_translate("MainWindow", "доп.инфо"))
-

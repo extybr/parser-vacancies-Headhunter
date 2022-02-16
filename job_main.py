@@ -2,19 +2,19 @@ import sys
 import requests
 from PyQt5 import QtWidgets
 from job_desine import Ui_MainWindow
+from information import region, categories  # продублировано для pyinstaller
 
 
 class MyWin(QtWidgets.QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setup_ui(self)
         self.ui.pushButton.clicked.connect(self.extract_jobs)
 
-    def extract_jobs(self):
+    def extract_jobs(self) -> None:
         self.ui.textBrowser.clear()
         period = self.ui.lineEdit_5.displayText()
-        # professional_role = '96'  # программист
         professional_role = ''
         if len(self.ui.lineEdit_3.displayText().strip()) > 0:
             professional_role = '&professional_role=' + str(self.ui.lineEdit_3.displayText())
@@ -22,13 +22,11 @@ class MyWin(QtWidgets.QMainWindow):
         page = self.ui.spinBox.value()
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
-        # area = 1979 - Комсомольск-на-Амуре/ 1975 - Хабаровский край/ 102 - Хабаровск
-        # area = 113 - Россия/ 1948 - Приморский край/ 22 - Владивосток
         # '&employer_id=3083859'  идентификатор компании Амурсталь
         # enable_snippets=true&
-        url = f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&' \
-              f'period={period}&only_with_salary=false{professional_role}{text_profession}&' \
-              f'page={page}&per_page={count}&area={area}&responses_count_enabled=true'
+        url = (f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&period'
+               f'={period}&only_with_salary=false{professional_role}{text_profession}&page='
+               f'{page}&per_page={count}&area={area}&responses_count_enabled=true')
 
         if self.extract_jobs:
             page = int(page) + 1
