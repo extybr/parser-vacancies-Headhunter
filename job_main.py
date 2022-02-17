@@ -2,7 +2,7 @@ import sys
 import requests
 from PyQt5 import QtWidgets
 from job_desine import Ui_MainWindow
-from information import region, categories  # продублировано для pyinstaller
+# from information import region, categories  # продублировано для pyinstaller
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -22,11 +22,14 @@ class MyWin(QtWidgets.QMainWindow):
         page = self.ui.spinBox.value()
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
-        # '&employer_id=3083859'  идентификатор компании Амурсталь
-        # enable_snippets=true&
-        url = (f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&period'
-               f'={period}&only_with_salary=false{professional_role}{text_profession}&page='
-               f'{page}&per_page={count}&area={area}&responses_count_enabled=true')
+        # '&employer_id=3083859' идентификатор компании Амурсталь
+        publication_time = ''
+        if self.ui.checkbox_2.isChecked():
+            publication_time = 'order_by=publication_time&'
+        url = (f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&enable_snippets=true&'
+               f'{publication_time}period={period}&only_with_salary=false{professional_role}'
+               f'{text_profession}&page={page}&per_page={count}&area={area}'
+               f'&responses_count_enabled=true')
 
         if self.extract_jobs:
             page = int(page) + 1
@@ -66,10 +69,17 @@ class MyWin(QtWidgets.QMainWindow):
                 information = ''
                 if self.ui.radioButton.isChecked():
                     count_vacancies = ''
-                    # company_id = index['employer']['id']
-                    # url_id = f'https://api.hh.ru/employers/{company_id}'
-                    # count_vacancies = ('\n🚷   Всего количество вакансий у компании: ' + str(
-                    #     requests.get(url_id, headers).json().get('open_vacancies', {})) + '\n')
+                    if self.ui.checkbox.isChecked():
+                        company_id = index['employer']['id']
+
+                        def get_count_vacancies(company_number: str, header: dict) -> str:
+                            url_id = f'https://api.hh.ru/employers/{company_number}'
+                            counter = ('\n🚷   Всего количество вакансий у компании: ' + str(
+                                requests.get(url_id, header).json().get('open_vacancies', {})
+                            ) + '\n')
+                            return counter
+
+                        count_vacancies = get_count_vacancies(company_id, headers)
                     requirement = str(index['snippet']['requirement']).replace(
                         '<highlighttext>', '*')
                     requirement = str(requirement).replace('</highlighttext>', '*')
