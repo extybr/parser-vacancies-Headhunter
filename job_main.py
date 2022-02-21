@@ -2,7 +2,6 @@ import sys
 import requests
 from PyQt5 import QtWidgets
 from job_desine import Ui_MainWindow
-# from information import region, categories  # продублировано для pyinstaller
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -22,17 +21,24 @@ class MyWin(QtWidgets.QMainWindow):
         page = self.ui.spinBox.value()
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
-        # '&employer_id=3083859' идентификатор компании Амурсталь
         publication_time = ''
+        industry = ''
+        if len(self.ui.lineEdit_6.displayText().strip()) > 0:
+            industry = '&industry=' + str(self.ui.lineEdit_6.displayText())
         if self.ui.checkbox_2.isChecked():
             publication_time = 'order_by=publication_time&'
+        # '&employer_id=3083859' идентификатор компании Сталь
         url = (f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&enable_snippets=true&'
                f'{publication_time}period={period}&only_with_salary=false{professional_role}'
-               f'{text_profession}&page={page}&per_page={count}&area={area}'
+               f'{text_profession}&page={page}&per_page={count}&area={area}{industry}'
                f'&responses_count_enabled=true')
 
+        # if page == 0:
+        #     self.temp = self.ui.lineEdit.displayText()
         if self.extract_jobs:
             page = int(page) + 1
+            # if self.temp != self.ui.lineEdit.displayText():
+            #     page = 0
             self.ui.spinBox.setValue(page)
 
         headers = {
@@ -117,9 +123,15 @@ class MyWin(QtWidgets.QMainWindow):
                 text.close()
             self.ui.textBrowser.scrollToAnchor("scroll")
         except OSError as error:
-            print(f'Статус: проблемы с доступом в интернет\n{error}')
-            self.ui.textBrowser.append(
-                '\n\n\n' + '  Статус: проблемы с доступом в интернет  '.center(142, '-'))
+            if str(error).find('HTTPSConnection') != -1:
+                print(f'Статус: проблемы с доступом в интернет\n{error}')
+                self.ui.textBrowser.append('\n\n\n' + '  Статус: проблемы с доступом в интернет  '
+                                           .center(142, '-'))
+            else:
+                print(f'Статус: не хватает прав доступа\n{error}')
+                self.ui.textBrowser.append(
+                    '\n\n\n' + '  Статус: не хватает прав доступа создания файла-отчета  '
+                    .center(130, '-'))
 
 
 if __name__ == "__main__":

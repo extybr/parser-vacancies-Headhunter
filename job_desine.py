@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from information import region, categories
+from information import region, categories, industry
 
 
 class Ui_MainWindow(object):
@@ -68,6 +68,11 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.label_9.setFont(font)
         self.label_9.setObjectName("label_9")
+        self.label_10 = QtWidgets.QLabel(self.centralwidget)
+        self.label_10.setGeometry(QtCore.QRect(700, 70, 85, 40))
+        font.setPointSize(11)
+        self.label_10.setFont(font)
+        self.label_10.setObjectName("label_10")
         self.lcdNumber = QtWidgets.QLCDNumber(self.centralwidget)
         self.lcdNumber.setGeometry(QtCore.QRect(40, 120, 90, 40))
         font.setPointSize(24)
@@ -111,6 +116,13 @@ class Ui_MainWindow(object):
         self.lineEdit_5.setStyleSheet("background-color: rgb(170, 255, 255);")
         self.lineEdit_5.setObjectName("lineEdit_5")
         self.lineEdit_5.setText('30')
+        self.lineEdit_6 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_6.setGeometry(QtCore.QRect(795, 75, 45, 30))
+        self.lineEdit_6.setFont(font)
+        self.lineEdit_6.setStyleSheet("background-color: rgb(170, 255, 255);")
+        self.lineEdit_6.setObjectName("lineEdit_6")
+        self.lineEdit_6.setText('')
+        self.lineEdit_6.setToolTip(industry)
         self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
         self.spinBox.setGeometry(QtCore.QRect(40, 73, 60, 40))
         font.setPointSize(12)
@@ -155,3 +167,4 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "Страница"))
         self.label_8.setText(_translate("MainWindow", "доп.инфо"))
         self.label_9.setText(_translate("MainWindow", "сорт-ка по дате"))
+        self.label_10.setText(_translate("MainWindow", "Индустрия\n компании"))
