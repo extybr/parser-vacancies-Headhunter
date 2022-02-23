@@ -1,18 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from information import region, categories, industry
+from information import *
 
 
-class Ui_MainWindow(object):
-    def setup_ui(self, MainWindow) -> None:
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1101, 867)
-        # MainWindow.showMaximized()
-        MainWindow.setMinimumSize(QtCore.QSize(1101, 867))
-        MainWindow.setMaximumSize(QtCore.QSize(1101, 867))
-        MainWindow.setStyleSheet("background-color: rgb(170, 255, 127);")
-        MainWindow.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('favicon.ico')))
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
+class UiMainWindow(object):
+    def setup_ui(self, main_window) -> None:
+        main_window.setObjectName("main_window")
+        main_window.resize(1101, 867)
+        # main_window.showMaximized()
+        main_window.setMinimumSize(QtCore.QSize(1101, 867))
+        main_window.setMaximumSize(QtCore.QSize(1101, 867))
+        main_window.setStyleSheet("background-color: rgb(170, 255, 127);")
+        main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('favicon.ico')))
+        self.centralwidget = QtWidgets.QWidget(main_window)
+        self.centralwidget.setObjectName("central_widget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setIcon(QtGui.QIcon(QtGui.QPixmap('search.png')))
         self.pushButton.setGeometry(QtCore.QRect(470, 125, 100, 35))
@@ -147,24 +147,23 @@ class Ui_MainWindow(object):
         self.textBrowser.setFont(font)
         self.textBrowser.setStyleSheet("background-color: rgb(224, 254, 255);")
         self.textBrowser.setObjectName("textBrowser")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.retranslate_ui(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        main_window.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(main_window)
+        self.statusbar.setObjectName("status_bar")
+        main_window.setStatusBar(self.statusbar)
+        self.text_ui(main_window)
+        QtCore.QMetaObject.connectSlotsByName(main_window)
 
-    def retranslate_ui(self, MainWindow) -> None:
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Поисковик вакансий на hh.ru"))
-        self.pushButton.setText(_translate("MainWindow", "поиск"))
-        self.label.setText(_translate("MainWindow", "Введите профессию для поиска"))
-        self.label_2.setText(_translate("MainWindow", "Найдено вакансий"))
-        self.label_3.setText(_translate("MainWindow", "Специализация"))
-        self.label_4.setText(_translate("MainWindow", "Регион"))
-        self.label_5.setText(_translate("MainWindow", "Число вакансий в поле вывода"))
-        self.label_6.setText(_translate("MainWindow", "Период дней"))
-        self.label_7.setText(_translate("MainWindow", "Страница"))
-        self.label_8.setText(_translate("MainWindow", "доп.инфо"))
-        self.label_9.setText(_translate("MainWindow", "сорт-ка по дате"))
-        self.label_10.setText(_translate("MainWindow", "Индустрия\n компании"))
+    def text_ui(self, main_window) -> None:
+        main_window.setWindowTitle("Поисковик вакансий на hh.ru")
+        self.pushButton.setText("поиск")
+        self.label.setText("Введите профессию для поиска")
+        self.label_2.setText("Найдено вакансий")
+        self.label_3.setText("Специализация")
+        self.label_4.setText("Регион")
+        self.label_5.setText("Число вакансий в поле вывода")
+        self.label_6.setText("Период дней")
+        self.label_7.setText("Страница")
+        self.label_8.setText("доп.инфо")
+        self.label_9.setText("сорт-ка по дате")
+        self.label_10.setText("Индустрия\n компании")

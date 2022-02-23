@@ -1,17 +1,23 @@
 import sys
 import requests
 from PyQt5 import QtWidgets
-from job_desine import Ui_MainWindow
+from job_gui import UiMainWindow
 
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None) -> None:
         QtWidgets.QWidget.__init__(self, parent)
-        self.ui = Ui_MainWindow()
+        self.ui = UiMainWindow()
         self.ui.setup_ui(self)
         self.ui.pushButton.clicked.connect(self.extract_jobs)
 
     def extract_jobs(self) -> None:
+        """
+        Парсит вакансии с api.hh.ru,
+        выводит ответ в поле вывода,
+        пишет в лог-файл
+        :return: None
+        """
         self.ui.textBrowser.clear()
         period = self.ui.lineEdit_5.displayText()
         professional_role = ''
@@ -52,11 +58,12 @@ class MyWin(QtWidgets.QMainWindow):
             print(f'Headhunter: парсинг страницы')
             result = requests.get(url, headers)
             results = result.json()
-            print('Найдено результатов:', results.get('found'))
+            count_results = results.get('found')
+            print('Найдено результатов:', count_results)
             print('\n' + '*' * 150 + '\n')
-            self.ui.lcdNumber.display(results.get('found'))
+            self.ui.lcdNumber.display(count_results)
             with open('_vacancies.txt', 'w', encoding='utf-8') as text:
-                text.write('Найдено результатов:' + str(results.get('found')) + '\n\n')
+                text.write('Найдено результатов:' + str(count_results) + '\n\n')
             items = results.get('items', {})
             for index in items:
                 company = index['employer']['name']
@@ -81,7 +88,7 @@ class MyWin(QtWidgets.QMainWindow):
                         def get_count_vacancies(company_number: str, header: dict) -> str:
                             url_id = f'https://api.hh.ru/employers/{company_number}'
                             counter = ('\n🚷   Всего количество вакансий у компании: ' + str(
-                                requests.get(url_id, header).json().get('open_vacancies', {})
+                                requests.get(url_id, header).json().get('open_vacancies', 0)
                             ) + '\n')
                             return counter
 
