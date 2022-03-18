@@ -4,7 +4,7 @@
 
      pyinstaller job_main.py -F -w --i=favicon.ico
 
-<img src="https://github.com/extybr/parser-vacancies-Headhunter/show.jpg" height="400">
+<img src="https://github.com/extybr/parser-vacancies-Headhunter/blob/main/show.jpg" height="400">
 
 ## 
 
