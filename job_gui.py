@@ -191,4 +191,4 @@ class UiMainWindow(object):
         self.label_8.setText("доп.инфо")
         self.label_9.setText("сорт-ка по дате")
         self.label_10.setText("Индустрия\n компании")
-        self.label_11.setText(" " * 7 + "log\npdf  txt  db")
+        self.label_11.setText(" " * 7 + "log\ntxt  db  pdf")
