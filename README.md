@@ -3,7 +3,7 @@
 ## Windows:
      pyinstaller job_main.py -F -w --i=favicon.ico
 
-<img src="show.jpg" height="400">
+<img src="preview.jpg" height="400">
 
 ## 
 
