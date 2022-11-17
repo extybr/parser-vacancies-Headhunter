@@ -1,7 +1,7 @@
 # Парсер вакансий с Headhunter <img src="https://i.hh.ru/logos/svg/hh.ru__min_.svg" height="32"/>
 
 ## Windows:
-     pyinstaller job_main.py -F -w --i=favicon.ico
+     pyinstaller main.py -F -w --i=favicon.ico
 
 <img src="preview.jpg" height="400">
 
