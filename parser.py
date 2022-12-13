@@ -38,9 +38,8 @@ class MyWin(QtWidgets.QMainWindow, Database):
         """
         self.ui.textBrowser.clear()
         period = self.ui.lineEdit_5.displayText()
-        professional_role = ''
-        if len(self.ui.lineEdit_3.displayText().strip()) > 0:
-            professional_role = '&professional_role=' + str(self.ui.lineEdit_3.displayText())
+        professional_role = '&professional_role=' + str(self.ui.lineEdit_3.displayText()) if len(
+            self.ui.lineEdit_3.displayText().strip()) > 0 else ''
         text_profession = '&text=' + self.ui.lineEdit.displayText()
         page = self.ui.spinBox.value()
         if page == 0:
@@ -50,17 +49,20 @@ class MyWin(QtWidgets.QMainWindow, Database):
             self.text_vacancies = self.ui.lineEdit.displayText()
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
-        publication_time = ''
-        industry = ''
-        if len(self.ui.lineEdit_6.displayText().strip()) > 0:
-            industry = '&industry=' + str(self.ui.lineEdit_6.displayText())
-        if self.ui.checkbox_2.isChecked():
-            publication_time = 'order_by=publication_time&'
-        # '&employer_id=3083859' идентификатор компании Сталь
+        checkbox = [self.ui.checkbox_6.isChecked(), self.ui.checkbox_7.isChecked(),
+                    self.ui.checkbox_8.isChecked(), self.ui.checkbox_9.isChecked(),
+                    self.ui.checkbox_10.isChecked()]
+        day = [f'&schedule={i}' for i in ['fullDay', 'remote', 'flyInFlyOut', 'shift', 'flexible']]
+        checkbox_schedule = list(filter(lambda x: x[0], list(zip(checkbox, day))))
+        schedule_id = '' if len(checkbox_schedule) == len(checkbox) else ''.join(i[1] for i in
+                                                                                 checkbox_schedule)
+        industry = '&industry=' + str(self.ui.lineEdit_6.displayText()) if len(
+            self.ui.lineEdit_6.displayText().strip()) > 0 else ''
+        publication_time = 'order_by=publication_time&' if self.ui.checkbox_2.isChecked() else ''
         url = (f'https://api.hh.ru/vacancies?clusters=true&st=searchVacancy&enable_snippets=true&'
                f'{publication_time}period={period}&only_with_salary=false{professional_role}'
                f'{text_profession}&page={page}&per_page={count}&area={area}{industry}'
-               f'&responses_count_enabled=true')
+               f'&responses_count_enabled=true{schedule_id}')
 
         if self.extract_jobs:
             page = int(page) + 1
