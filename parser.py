@@ -10,9 +10,34 @@ class MyWin(QtWidgets.QMainWindow, Database):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = UiMainWindow()
         self.ui.setup_ui(self)
-        self.text_vacancies = self.ui.lineEdit.displayText()
         self.ui.pushButton.clicked.connect(self.extract_jobs)
         self.ui.pushButton_2.clicked.connect(self.read_jobs)
+        self.text_vacancies = self.ui.lineEdit.displayText()
+        self.text_period = self.ui.lineEdit_5.displayText()
+        self.text_professional_role = self.ui.lineEdit_3.displayText()
+        self.text_area = self.ui.lineEdit_2.displayText()
+        self.text_industry = self.ui.lineEdit_6.displayText()
+        self.text_page_count = self.ui.lineEdit_4.displayText()
+        self.checkbox_2_time = self.ui.checkbox_2.checkState()
+        self.checkbox_6_schedule = self.ui.checkbox_6.checkState()
+        self.checkbox_7_schedule = self.ui.checkbox_7.checkState()
+        self.checkbox_8_schedule = self.ui.checkbox_8.checkState()
+        self.checkbox_9_schedule = self.ui.checkbox_9.checkState()
+        self.checkbox_10_schedule = self.ui.checkbox_10.checkState()
+
+    def set_state(self):
+        self.text_vacancies = self.ui.lineEdit.displayText()
+        self.text_period = self.ui.lineEdit_5.displayText()
+        self.text_professional_role = self.ui.lineEdit_3.displayText()
+        self.text_area = self.ui.lineEdit_2.displayText()
+        self.text_industry = self.ui.lineEdit_6.displayText()
+        self.text_page_count = self.ui.lineEdit_4.displayText()
+        self.checkbox_2_time = self.ui.checkbox_2.checkState()
+        self.checkbox_6_schedule = self.ui.checkbox_6.checkState()
+        self.checkbox_7_schedule = self.ui.checkbox_7.checkState()
+        self.checkbox_8_schedule = self.ui.checkbox_8.checkState()
+        self.checkbox_9_schedule = self.ui.checkbox_9.checkState()
+        self.checkbox_10_schedule = self.ui.checkbox_10.checkState()
 
     def read_jobs(self) -> None:
         """
@@ -41,12 +66,24 @@ class MyWin(QtWidgets.QMainWindow, Database):
         professional_role = '&professional_role=' + str(self.ui.lineEdit_3.displayText()) if len(
             self.ui.lineEdit_3.displayText().strip()) > 0 else ''
         text_profession = '&text=' + self.ui.lineEdit.displayText()
+
         page = self.ui.spinBox.value()
         if page == 0:
-            self.text_vacancies = self.ui.lineEdit.displayText()
-        if self.text_vacancies != self.ui.lineEdit.displayText():
+            self.set_state()
+        hold_state = [self.text_vacancies, self.text_period, self.text_professional_role,
+                      self.text_area, self.text_industry, self.text_page_count,
+                      self.checkbox_2_time, self.checkbox_6_schedule, self.checkbox_7_schedule,
+                      self.checkbox_8_schedule, self.checkbox_9_schedule, self.checkbox_10_schedule]
+        current_state = [self.ui.lineEdit.displayText(), self.ui.lineEdit_5.displayText(),
+                         self.ui.lineEdit_3.displayText(), self.ui.lineEdit_2.displayText(),
+                         self.ui.lineEdit_6.displayText(), self.ui.lineEdit_4.displayText(),
+                         self.ui.checkbox_2.checkState(), self.ui.checkbox_6.checkState(),
+                         self.ui.checkbox_7.checkState(), self.ui.checkbox_8.checkState(),
+                         self.ui.checkbox_9.checkState(), self.ui.checkbox_10.checkState()]
+        if [i for i in zip(hold_state, current_state) if i[0] != i[1]]:
             page = 0
-            self.text_vacancies = self.ui.lineEdit.displayText()
+            self.set_state()
+
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
         checkbox = [self.ui.checkbox_6.isChecked(), self.ui.checkbox_7.isChecked(),
@@ -81,7 +118,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
             self.initialize_database()
 
         try:
-            print(f'Headhunter: парсинг страницы')
+            print('Headhunter: парсинг страницы')
             result = requests.get(url, headers)
             results = result.json()
             count_results = results.get('found')
