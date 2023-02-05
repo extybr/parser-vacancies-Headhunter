@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from information import *
+from decode_img_temp import decode_b64
 
 
 class UiMainWindow(object):
@@ -10,7 +11,7 @@ class UiMainWindow(object):
         main_window.setMinimumSize(QtCore.QSize(1101, 867))
         main_window.setMaximumSize(QtCore.QSize(1101, 867))
         main_window.setStyleSheet("background-color: rgb(170, 255, 127);")
-        main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap('favicon.ico')))
+        main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(decode_b64())))
         self.centralwidget = QtWidgets.QWidget(main_window)
         self.centralwidget.setObjectName("central_widget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
