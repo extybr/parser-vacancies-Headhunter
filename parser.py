@@ -3,6 +3,7 @@ import os.path
 from database import Database
 from PyQt5 import QtWidgets
 from gui import UiMainWindow
+from write_csv import save_to_csv
 
 
 class MyWin(QtWidgets.QMainWindow, Database):
@@ -116,6 +117,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
         if self.ui.checkbox_4.isChecked():
             self.drop_database()
             self.initialize_database()
+        save_csv = []
 
         try:
             print('Headhunter: парсинг страницы')
@@ -186,6 +188,11 @@ class MyWin(QtWidgets.QMainWindow, Database):
                         self.insert_database(company, name, str(from_salary), str(to_salary),
                                              link, types, date, schedule.lower(),
                                              counters_responses, address)
+                    if self.ui.checkbox_11.isChecked():
+                        salary_from = salary['from'] if isinstance(salary['from'], int) else '*'
+                        salary_to = salary['to'] if isinstance(salary['to'], int) else '*'
+                        save_csv.append([company, name, salary_from, salary_to, link, types,
+                                         date, schedule.lower(), counters_responses, address])
                 else:
                     output = (f'  {company}  '.center(107, '*') + f'\n\n🚮   Профессия: {name}\n😍'
                               f'   Зарплата: не указана\n⚜   Ссылка: {link}\n🐯   /{types}/'
@@ -201,9 +208,14 @@ class MyWin(QtWidgets.QMainWindow, Database):
                         self.insert_database(company, name, 'не указана', 'не указана', link,
                                              types, date, schedule.lower(), counters_responses,
                                              address)
+                    if self.ui.checkbox_11.isChecked():
+                        save_csv.append([company, name, 'не указана', 'не указана', link, types,
+                                         date, schedule.lower(), counters_responses, address])
                 # self.ui.textBrowser.append("<a name=\"scroll\" href=\"\">۩</a>")
             if self.ui.checkbox_3.isChecked():
                 text.close()
+            if self.ui.checkbox_11.isChecked():
+                save_to_csv(save_csv)
             self.ui.textBrowser.scrollToAnchor("scroll")
             if self.ui.checkbox_5.isChecked():
                 from PyQt5 import QtGui

@@ -140,6 +140,9 @@ definition_db = """
 definition_txt = """
 Сохранить в формате txt
 """
+definition_csv = """
+Сохранить в формате csv
+"""
 definition_fullDay = """
 Полный день
 """
