@@ -1,20 +1,18 @@
-import openpyxl
+from xlsxwriter import Workbook
 
 
 def save_to_xls(data):
-    """ Создание xlsx файла и запись в него """
-    book = openpyxl.Workbook()
-    book.remove(book.active)
-    sheet = book.create_sheet("Вакансии")
-    sheet.column_dimensions["A"].width = 40
-    sheet.column_dimensions["B"].width = 50
-    sheet.column_dimensions["C"].width = 10
-    sheet.column_dimensions["D"].width = 10
-    sheet.column_dimensions["E"].width = 30
-    sheet.column_dimensions["F"].width = 13
-    sheet.column_dimensions["G"].width = 13
-    sheet.column_dimensions["H"].width = 18
-    sheet.column_dimensions["I"].width = 5
-    sheet.column_dimensions["J"].width = 50
-    [sheet.append(i) for i in data]
-    book.save("_vacancies.xlsx")
+    workbook = Workbook('_vacancies.xlsx')
+    worksheet = workbook.add_worksheet()
+    worksheet.set_column('A:A', 40)
+    worksheet.set_column('B:B', 50)
+    worksheet.set_column('C:C', 10)
+    worksheet.set_column('D:D', 10)
+    worksheet.set_column('E:E', 30)
+    worksheet.set_column('F:F', 13)
+    worksheet.set_column('G:G', 13)
+    worksheet.set_column('H:H', 18)
+    worksheet.set_column('I:I', 5)
+    worksheet.set_column('J:J', 50)
+    [worksheet.write_row(i, 0, data[i]) for i in range(len(data))]
+    workbook.close()

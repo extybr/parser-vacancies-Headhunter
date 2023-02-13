@@ -212,7 +212,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
                         self.insert_database(company, name, 'не указана', 'не указана', link,
                                              types, date, schedule.lower(), counters_responses,
                                              address)
-                    if self.ui.checkbox_11.isChecked() or self.ui.checkbox_12.isChecked():
+                    if self.ui.checkbox_11.isChecked():
                         save_csv.append([company, name, 'не указана', 'не указана', link, types,
                                          date, schedule.lower(), counters_responses, address])
                     if self.ui.checkbox_12.isChecked():
