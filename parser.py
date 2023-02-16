@@ -68,7 +68,8 @@ class MyWin(QtWidgets.QMainWindow, Database):
         professional_role = '&professional_role=' + str(self.ui.lineEdit_3.displayText()) if len(
             self.ui.lineEdit_3.displayText().strip()) > 0 else ''
         text_profession = '&text=' + self.ui.lineEdit.displayText()
-
+        if self.ui.comboButton.currentText() != 'выбор региона':
+            self.ui.lineEdit_2.setText(self.ui.comboButton.currentText().split(': ')[1])
         page = self.ui.spinBox.value()
         if page == 0:
             self.set_state()
@@ -85,7 +86,6 @@ class MyWin(QtWidgets.QMainWindow, Database):
         if [i for i in zip(hold_state, current_state) if i[0] != i[1]]:
             page = 0
             self.set_state()
-
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
         checkbox = [self.ui.checkbox_6.isChecked(), self.ui.checkbox_7.isChecked(),
