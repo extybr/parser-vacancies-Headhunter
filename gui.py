@@ -234,7 +234,7 @@ class UiMainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.comboButton.setFont(font)
-        self.comboButton.setStyleSheet("background-color: rgb(170, 170, 170);")
+        self.comboButton.setStyleSheet("background-color: rgb(224, 254, 254);")
         self.comboButton.setObjectName("comboButton")
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
         self.textBrowser.setGeometry(QtCore.QRect(0, 170, 1101, 691))
