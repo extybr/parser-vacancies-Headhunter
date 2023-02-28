@@ -1,8 +1,8 @@
 from xlsxwriter import Workbook
 
 
-def save_to_xls(data):
-    workbook = Workbook('_vacancies.xlsx')
+def save_to_xls(name, data):
+    workbook = Workbook(f'_{name}_.xlsx')
     worksheet = workbook.add_worksheet()
     worksheet.set_column('A:A', 40)
     worksheet.set_column('B:B', 50)

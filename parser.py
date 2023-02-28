@@ -1,7 +1,6 @@
 from requests import get
 import os.path
 from database import Database
-from database_tv import dt
 from PyQt5 import QtWidgets
 from gui import UiMainWindow
 from write_csv import save_to_csv
@@ -10,15 +9,16 @@ from datetime import date as dd
 from time import time
 
 
-class MyWin(QtWidgets.QMainWindow, Database):
+class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = UiMainWindow()
         self.ui.setup_ui(self)
-        self.ui.pushButton.clicked.connect(self.extract_jobs)
-        self.ui.pushButton_2.clicked.connect(self.read_jobs)
-        self.ui.pushButton_3.clicked.connect(self.search_job)
+        self.ui.pushButton.clicked.connect(self.extract_hh)
+        self.ui.pushButton_2.clicked.connect(self.read_hh)
+        self.ui.pushButton_3.clicked.connect(self.extract_trudvsem)
         self.ui.pushButton_4.clicked.connect(self.read_trudvsem)
+        self.ui.pushButton_5.clicked.connect(self.get_areas_id)
         self.text_vacancies = self.ui.lineEdit.displayText()
         self.tv_vacancies = self.ui.lineEdit_20.displayText()
         self.text_period = self.ui.lineEdit_5.displayText()
@@ -37,6 +37,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
         self.checkbox_10_schedule = self.ui.checkbox_10.checkState()
 
     def set_state(self):
+        """ Для запоминания состояний """
         self.text_vacancies = self.ui.lineEdit.displayText()
         self.text_period = self.ui.lineEdit_5.displayText()
         self.text_professional_role = self.ui.lineEdit_3.displayText()
@@ -54,29 +55,41 @@ class MyWin(QtWidgets.QMainWindow, Database):
         self.tv_area = self.ui.lineEdit_21.displayText()
         self.tv_page_count = self.ui.lineEdit_22.displayText()
 
-    def read_jobs(self) -> None:
+    def get_areas_id(self) -> None:
+        """
+        Получение списка с сайта hh.ru
+        :return: None
+        """
+        from region_id import get_region
+        self.ui.comboButton.addItems(['выбор региона'] + get_region())
+
+    def read_hh(self) -> None:
         """
         Чтение базы данных и вывод в поле программы.
         :return: None
         """
+        _db = Database('hh')
         self.ui.textBrowser.clear()
-        if os.path.exists(self.db):
-            output = self.read_database()
-            for count, line in enumerate(output):
-                self.ui.textBrowser.append(f'{line}')
-                self.ui.lcdNumber.display(count + 1)
+        if os.path.exists('_hh-trudvsem_.db'):
+            _output = _db.read_db()
+            _count = 0
+            for line in _output:
+                self.ui.textBrowser.append(line)
+                _count += 1
+            self.ui.lcdNumber.display(_count)
             self.ui.textBrowser.scrollToAnchor("scroll")
         else:
             self.ui.textBrowser.append('\n\n' + '  База Данных отсутствует  '
                                                 ''.center(107, '*'))
 
-    def extract_jobs(self) -> None:
+    def extract_hh(self) -> None:
         """
         Парсит вакансии с api.hh.ru,
         выводит ответ в поле вывода,
         пишет в лог-файл.
         :return: None
         """
+        _db = Database('hh')
         self.ui.textBrowser.clear()
         period = self.ui.lineEdit_5.displayText()
         professional_role = '&professional_role=' + str(
@@ -131,7 +144,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
                f'&page={page}&per_page={count}&area={area}{industry}'
                f'&responses_count_enabled=true{schedule_id}')
 
-        if self.extract_jobs:
+        if self.extract_hh:
             page = int(page) + 1
             self.ui.spinBox.setValue(page)
 
@@ -144,8 +157,8 @@ class MyWin(QtWidgets.QMainWindow, Database):
         }
 
         if self.ui.checkbox_4.isChecked():
-            self.drop_database()
-            self.initialize_database()
+            _db.drop_database()
+            _db.initialize_database()
         save_csv, save_xls = [], []
 
         try:
@@ -157,7 +170,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
             # print('\n' + '*' * 150 + '\n')
             self.ui.lcdNumber.display(count_results)
             if self.ui.checkbox_3.isChecked():
-                with open('_vacancies.txt', 'w', encoding='utf-8') as text:
+                with open('_hh_.txt', 'w', encoding='utf-8') as text:
                     text.write(f'Найдено результатов: {count_results}\n\n')
             items = results.get('items', {})
             for index in items:
@@ -181,9 +194,9 @@ class MyWin(QtWidgets.QMainWindow, Database):
 
                         def get_count_vacancies(company_number: str, header: dict) -> str:
                             url_id = f'https://api.hh.ru/employers/{company_number}'
-                            counter = ('\n🚷   Всего количество вакансий у компании: ' + str(
-                                get(url_id, header).json().get('open_vacancies', 0)
-                            ) + '\n')
+                            counter = ('\n🚷   Всего количество вакансий у '
+                                       'компании: ' + str(get(url_id, header).json(
+                            ).get('open_vacancies', 0)) + '\n')
                             return counter
 
                         count_vacancies = get_count_vacancies(company_id, headers)
@@ -193,9 +206,11 @@ class MyWin(QtWidgets.QMainWindow, Database):
                     responsibility = str(index['snippet']['requirement']).replace(
                         '<highlighttext>', '*')
                     responsibility = str(responsibility).replace('</highlighttext>', '*')
-                    information = (f'\n🐵   Отрывок из требований по вакансии: {requirement}\n🐼   '
-                                   f'Отрывок из обязанностей по вакансии: {responsibility}'
-                                   f'\n' + count_vacancies)
+                    information = (
+                            f'\n🐵   Отрывок из требований по вакансии: '
+                            f'{requirement}\n🐼   Отрывок из обязанностей по '
+                            f'вакансии: {responsibility}\n' + count_vacancies
+                    )
                 if salary:
                     from_salary = salary['from']
                     to_salary = salary['to']
@@ -203,21 +218,25 @@ class MyWin(QtWidgets.QMainWindow, Database):
                         from_salary = '😜'
                     if not isinstance(to_salary, int):
                         to_salary = '🚀'
-                    output = (f'  {company}  '.center(107, '*') + f'\n\n🚮   Профессия: {name}\n😍   '
-                              f'Зарплата: {from_salary} - {to_salary}\n⚜   Ссылка: {link}\n🐯   '
-                              f'/{types}/   -🌼-   дата публикации: {date}   -🌻-   график работы: '
-                              f'{schedule.lower()}\n🚦   Количество откликов для вакансии: '
-                              f'{counters_responses}\n🚘   Адрес: {address}\n{information}')
+                    output = (
+                            f'  {company}  '.center(107, '*') + f'\n\n🚮   '
+                            f'Профессия: {name}\n😍   Зарплата: {from_salary} '
+                            f'- {to_salary}\n⚜   Ссылка: {link}\n🐯   /{types}/'
+                            f'   -🌼-   дата публикации: {date}   -🌻-   '
+                            f'график работы: {schedule.lower()}\n🚦   Количество'
+                            f' откликов для вакансии: {counters_responses}\n🚘'
+                            f'   Адрес: {address}\n{information}'
+                    )
                     # print(output)
                     self.ui.textBrowser.append(output)
                     if self.ui.checkbox_3.isChecked():
-                        text = open('_vacancies.txt', 'a', encoding='utf-8')
+                        text = open('_hh_.txt', 'a', encoding='utf-8')
                         text.write(output.center(120, '*') + '\n')
                     if self.ui.checkbox_4.isChecked():
-                        self.insert_database(company, name, str(from_salary),
-                                             str(to_salary), link, types,
-                                             date, schedule.lower(),
-                                             counters_responses, address)
+                        _db.insert_hh(company, name, str(from_salary),
+                                      str(to_salary), link, types, date,
+                                      schedule.lower(), counters_responses,
+                                      address)
                     if self.ui.checkbox_11.isChecked():
                         salary_from = salary['from'] if isinstance(salary['from'], int) else '*'
                         salary_to = salary['to'] if isinstance(salary['to'], int) else '*'
@@ -229,23 +248,25 @@ class MyWin(QtWidgets.QMainWindow, Database):
                                          link, types, date, schedule.lower(),
                                          counters_responses, address])
                 else:
-                    output = (f'  {company}  '.center(107, '*') + f'\n\n🚮   '
-                              f'Профессия: {name}\n😍   Зарплата: не указана'
-                              f'\n⚜   Ссылка: {link}\n🐯   /{types}/   -🌼-'
-                              f'   дата публикации: {date}   -🌻-   график '
-                              f'работы: {schedule.lower()}\n🚦   Количество '
-                              f'откликов для вакансии: {counters_responses}'
-                              f'\n🚘   Адрес: {address}\n{information}')
+                    output = (
+                            f'  {company}  '.center(107, '*') + f'\n\n🚮   '
+                            f'Профессия: {name}\n😍   Зарплата: не указана\n'
+                            f'⚜   Ссылка: {link}\n🐯   /{types}/   -🌼-   '
+                            f'дата публикации: {date}   -🌻-   график работы: '
+                            f'{schedule.lower()}\n🚦   Количество откликов для '
+                            f'вакансии: {counters_responses}\n🚘   Адрес: '
+                            f'{address}\n{information}'
+                    )
                     # print(output)
                     self.ui.textBrowser.append(output)
                     if self.ui.checkbox_3.isChecked():
-                        text = open('_vacancies.txt', 'a', encoding='utf-8')
+                        text = open('_hh_.txt', 'a', encoding='utf-8')
                         text.write(output.center(120, '*') + '\n')
                     if self.ui.checkbox_4.isChecked():
-                        self.insert_database(company, name, 'не указана',
-                                             'не указана', link, types, date,
-                                             schedule.lower(),
-                                             counters_responses, address)
+                        _db.insert_hh(company, name, 'не указана',
+                                      'не указана', link, types, date,
+                                      schedule.lower(), counters_responses,
+                                      address)
                     if self.ui.checkbox_11.isChecked():
                         save_csv.append([company, name, 'не указана',
                                          'не указана', link, types,
@@ -260,13 +281,13 @@ class MyWin(QtWidgets.QMainWindow, Database):
             if self.ui.checkbox_3.isChecked():
                 text.close()
             if self.ui.checkbox_11.isChecked():
-                save_to_csv(save_csv)
+                save_to_csv('hh', save_csv)
             if self.ui.checkbox_12.isChecked():
-                save_to_xls(save_xls)
+                save_to_xls('hh', save_xls)
             self.ui.textBrowser.scrollToAnchor("scroll")
             if self.ui.checkbox_5.isChecked():
                 from PyQt5 import QtGui
-                pdf = QtGui.QPdfWriter('_vacancies.pdf')
+                pdf = QtGui.QPdfWriter('_hh_.pdf')
                 self.ui.textBrowser.print(pdf)
         except OSError as error:
             if str(error).find('HTTPSConnection') != -1:
@@ -285,25 +306,27 @@ class MyWin(QtWidgets.QMainWindow, Database):
         Чтение базы данных и вывод в поле программы.
         :return: None
         """
+        _db = Database('trudvsem')
         self.ui.textBrowser_2.clear()
-        if os.path.exists(self.db):
-            output = dt.read_database()
-            count = 0
-            for line in output:
+        if os.path.exists('_hh-trudvsem_.db'):
+            _output = _db.read_db()
+            _count = 0
+            for line in _output:
                 self.ui.textBrowser_2.append(line)
-                count += 1
-            self.ui.lcdNumber_2.display(count)
+                _count += 1
+            self.ui.lcdNumber_2.display(_count)
             self.ui.textBrowser_2.scrollToAnchor("scroll")
         else:
             self.ui.textBrowser_2.append(
                 '\n\n' + '  База Данных отсутствует  '.center(107, '*'))
 
-    def search_job(self) -> None:
-        """  Парсер вакансий с сайта trudvsem """
+    def extract_trudvsem(self) -> None:
+        """  Парсер вакансий с сайта trudvsem.ru """
+        _db = Database('trudvsem')
         self.ui.textBrowser_2.clear()
         if self.ui.checkbox_24.isChecked():
-            dt.drop_database()
-            dt.initialize_database()
+            _db.drop_database()
+            _db.initialize_database()
         try:
             text_profession = f'&text={self.ui.lineEdit_20.displayText()}'
             if self.ui.comboButton_2.currentText() != 'выбор региона':
@@ -345,7 +368,7 @@ class MyWin(QtWidgets.QMainWindow, Database):
                 'Connection': 'keep-alive'
             }
 
-            if self.search_job:
+            if self.extract_trudvsem:
                 page = int(page) + 1
                 self.ui.spinBox_2.setValue(page)
 
@@ -373,28 +396,30 @@ class MyWin(QtWidgets.QMainWindow, Database):
                             from_salary = '😜'
                         if to_salary == 0:
                             to_salary = '🚀'
-                        output = (f'  {company}  '.center(107, '*') + f'\n\n🚮'
-                                  f'   Профессия: {name}\n😍   Зарплата: '
-                                  f'{from_salary} - {to_salary}\n⚜   Ссылка: '
-                                  f'{link}\n🐯   дата публикации: {date}   '
-                                  f'-🌻-   график работы: {schedule.lower()}'
-                                  f'\n🚘   Адрес: {address}\n')
+                        output = (
+                                f'  {company}  '.center(107, '*') + f'\n\n🚮   '
+                                f'Профессия: {name}\n😍   Зарплата: '
+                                f'{from_salary} - {to_salary}\n⚜   Ссылка: '
+                                f'{link}\n🐯   дата публикации: {date}   -🌻-'
+                                f'   график работы: {schedule.lower()}\n🚘   '
+                                f'Адрес: {address}\n'
+                        )
                         # print(output)
                         self.ui.textBrowser_2.append(output)
                         if self.ui.checkbox_24.isChecked():
-                            dt.insert_database(company, name, str(from_salary),
-                                               str(to_salary), link, date,
-                                               schedule.lower(), address)
+                            _db.insert_trudvsem(company, name, str(from_salary),
+                                                str(to_salary), link, date,
+                                                schedule.lower(), address)
                         if self.ui.checkbox_26.isChecked():
                             save_xls.append([company, name, str(from_salary),
                                              str(to_salary), link, date,
                                              schedule.lower(), address])
                 self.ui.textBrowser_2.scrollToAnchor("scroll")
                 if self.ui.checkbox_26.isChecked():
-                    save_to_xls(save_xls)
+                    save_to_xls('trudvsem', save_xls)
                 if self.ui.checkbox_25.isChecked():
                     from PyQt5 import QtGui
-                    pdf = QtGui.QPdfWriter('_vacancies.pdf')
+                    pdf = QtGui.QPdfWriter('_trudvsem_.pdf')
                     self.ui.textBrowser_2.print(pdf)
         except OSError as error:
             # print(f'Статус: проблемы с доступом в интернет\n{error}')

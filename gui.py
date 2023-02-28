@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from information import *
 from decode_img_temp import decode_b64
-# from region_id import get_region   # получение списка с сайта hh.ru
 from area import area_hh, area_trudvsem
 
 
@@ -13,7 +12,8 @@ class UiMainWindow(object):
         main_window.setMinimumSize(QtCore.QSize(1101, 867))
         main_window.setMaximumSize(QtCore.QSize(1101, 867))
         main_window.setStyleSheet("background-color: rgb(170, 255, 127);")
-        main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(decode_b64())))
+        img = decode_b64()
+        main_window.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(img[0])))
         self.centralwidget = QtWidgets.QWidget(main_window)
         self.centralwidget.setObjectName("central_widget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -36,17 +36,32 @@ class UiMainWindow(object):
         self.label.setGeometry(QtCore.QRect(335, 15, 490, 30))
         self.label.setFont(font)
         self.label.setObjectName("label")
+        self.icon = QtWidgets.QLabel(self.tab)
+        self.icon.setGeometry(QtCore.QRect(300, 15, 30, 30))
+        self.pix = QtGui.QPixmap(img[0]).scaled(30, 30)
+        self.icon.setPixmap(self.pix)
         self.pushButton_2 = QtWidgets.QPushButton(self.tab)
         self.pushButton_2.setGeometry(QtCore.QRect(45, 45, 65, 20))
         self.pushButton_2.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
-        self.pushButton_2.setStyleSheet("color: rgb(255, 255, 255);\n"
-                                        "background-color: rgb(0, 0, 0);\n"
-                                        "border-style: outset; border-radius: 7px;"
-                                        "border-color: green; border-width: 2px;")
+        self.pushButton_2.setStyleSheet(
+            "color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);\n"
+            "border-style: outset; border-radius: 7px;border-color: green; "
+            "border-width: 2px;"
+        )
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.setToolTip(definition_readDB)
         font.setPixelSize(14)
         self.pushButton_2.setFont(font)
+        self.pushButton_5 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_5.setGeometry(QtCore.QRect(685, 140, 15, 15))
+        self.pushButton_5.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
+        self.pushButton_5.setStyleSheet(
+            "color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);\n"
+            "border-style: outset; border-radius: 7px;border-color: red; "
+            "border-width: 2px;"
+        )
+        self.pushButton_5.setObjectName("pushButton_5")
+        self.pushButton_5.setToolTip('обновление списка online')
         self.label_2 = QtWidgets.QLabel(self.tab)
         self.label_2.setGeometry(QtCore.QRect(177, 125, 190, 30))
         font.setPixelSize(19)
@@ -284,6 +299,10 @@ class UiMainWindow(object):
         self.label_20.setGeometry(QtCore.QRect(335, 15, 490, 30))
         self.label_20.setFont(font)
         self.label_20.setObjectName("label_20")
+        self.icon_2 = QtWidgets.QLabel(self.tab_2)
+        self.icon_2.setGeometry(QtCore.QRect(300, 15, 30, 30))
+        self.pix_2 = QtGui.QPixmap(img[1]).scaled(30, 30)
+        self.icon_2.setPixmap(self.pix_2)
         self.pushButton_4 = QtWidgets.QPushButton(self.tab_2)
         self.pushButton_4.setGeometry(QtCore.QRect(45, 45, 65, 20))
         self.pushButton_4.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
@@ -328,7 +347,7 @@ class UiMainWindow(object):
         self.label_28.setFont(font)
         self.label_28.setObjectName("label_28")
         self.label_29 = QtWidgets.QLabel(self.tab_2)
-        self.label_29.setGeometry(QtCore.QRect(20, 5, 300, 30))
+        self.label_29.setGeometry(QtCore.QRect(20, 5, 250, 30))
         font.setPixelSize(12)
         self.label_29.setFont(font)
         self.label_29.setObjectName("label_29")
@@ -400,15 +419,15 @@ class UiMainWindow(object):
         self.spinBox_2.setMaximum(999)
         self.spinBox_2.setObjectName("spinBox")
         main_window.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(main_window)
-        self.statusbar.setObjectName("status_bar")
-        main_window.setStatusBar(self.statusbar)
+        # self.statusbar = QtWidgets.QStatusBar(main_window)
+        # self.statusbar.setObjectName("status_bar")
+        # main_window.setStatusBar(self.statusbar)
         self.text_ui(main_window)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def text_ui(self, main_window) -> None:
-        main_window.setWindowTitle("Поисковик вакансий на hh.ru")
+        main_window.setWindowTitle("Поисковик вакансий на hh.ru и trudvsem.ru")
         self.pushButton.setText("поиск")
         self.pushButton_2.setText("read db")
         self.label.setText("Введите профессию для поиска")
@@ -423,10 +442,9 @@ class UiMainWindow(object):
         self.label_10.setText("txt  db   pdf   csv   xls")
         self.label_11.setText("сохранить")
         self.label_12.setText("Индустрия\n компании")
-        # получение списка с сайта hh.ru
-        # self.comboButton.addItems(['выбор региона'] + get_region())
+        id_areas = ['выбор региона'] + area_hh
         # self.comboButton.addItem('Россия: 113')
-        self.comboButton.addItems(['выбор региона'] + area_hh)
+        self.comboButton.addItems(id_areas)
         self.label_20.setText("Введите профессию для поиска")
         self.label_21.setText("Найдено вакансий")
         self.pushButton_3.setText("поиск")
@@ -440,4 +458,3 @@ class UiMainWindow(object):
         self.label_28.setText(" сохранить\ndb   pdf   xls")
         self.label_29.setText("Федеральная государственная\n   "
                               "информационная система")
-

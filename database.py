@@ -3,13 +3,26 @@ import os.path
 
 
 class Database:
-    db = '_vacancies.db'
-    command_create = ('CREATE TABLE headhunter (company text, name text, '
-                      'from_salary text, to_salary text, link text, types text,'
-                      ' date text, schedule text, counters_responses text, '
-                      'address text)')
-    command_drop = "DROP TABLE IF EXISTS headhunter"
-    command_read = 'SELECT * FROM headhunter'
+    def __init__(self, name):
+        self.name = name
+        self.db = '_hh-trudvsem_.db'
+        if name == 'hh':
+            self.command_create = (
+                'CREATE TABLE headhunter (company text, name text, '
+                'from_salary text, to_salary text, link text, types text,'
+                ' date text, schedule text, counters_responses text, '
+                'address text)'
+            )
+            self.command_drop = "DROP TABLE IF EXISTS headhunter"
+            self.command_read = 'SELECT * FROM headhunter'
+        else:
+            self.command_create = (
+                'CREATE TABLE trudvsem (company text, name text, '
+                'from_salary text, to_salary text, link text, date text, '
+                'schedule text, address text)'
+            )
+            self.command_drop = "DROP TABLE IF EXISTS trudvsem"
+            self.command_read = "SELECT * FROM trudvsem"
 
     def command_database(self, command_sql: str) -> None:
         """
@@ -44,9 +57,9 @@ class Database:
             # print('База данных отсутствует и будет создана')
             self.command_database(self.command_create)
 
-    def insert_database(self, company: str, name: str, from_salary: str,
-                        to_salary: str, link: str, types: str, date: str,
-                        schedule: str, counters_responses: str, address: str):
+    def insert_hh(self, company: str, name: str, from_salary: str,
+                  to_salary: str, link: str, types: str, date: str,
+                  schedule: str, counters_responses: str, address: str):
         """
         Запись данных в таблицу базу данных.
         :param company: str
@@ -69,7 +82,29 @@ class Database:
                           f"'{counters_responses}', '{address}')")
         self.command_database(command_insert)
 
-    def read_database(self) -> str:
+    def insert_trudvsem(self, company: str, name: str, from_salary: str,
+                        to_salary: str, link: str, date, schedule: str,
+                        address: str) -> None:
+        """
+        Запись данных в таблицу базу данных.
+        :param company: str
+        :param name: str
+        :param from_salary: str
+        :param to_salary: str
+        :param link: str
+        :param date: text
+        :param schedule: str
+        :param address: str
+        :return: None
+        """
+        command_insert = (f"INSERT INTO trudvsem (company, name, from_salary, "
+                          f"to_salary, link, date, schedule, address) "
+                          f"VALUES ('{company}', '{name}', '{from_salary}', "
+                          f"'{to_salary}', '{link}', '{date}',' {schedule}', "
+                          f"'{address}')")
+        self.command_database(command_insert)
+
+    def read_db(self) -> str:
         """
         Передача данных с базы данных.
         :return: str
@@ -79,13 +114,22 @@ class Database:
             cursor = connect.cursor()
             data = cursor.execute(self.command_read)
             for variable in data:
-                yield (f'  {variable[0]}  '.center(107, '*') + f'\n\n🚮   '
-                       f'Профессия: {variable[1]}\n😍   Зарплата: {variable[2]}'
-                       f' - {variable[3]}\n⚜   Ссылка: {variable[4]}\n🐯   '
-                       f'/{variable[5]}/   -🌼-   дата публикации: {variable[6]}'
-                       f'   -🌻-   график работы: {variable[7]}\n🚦   Количество'
-                       f' откликов для вакансии: {variable[8]}\n'
-                       f'🚘   Адрес: {variable[9]}\n')
+                if self.name == 'hh':
+                    yield (f'  {variable[0]}  '.center(107, '*') + f'\n\n🚮   '
+                           f'Профессия: {variable[1]}\n😍   Зарплата: '
+                           f'{variable[2]} - {variable[3]}\n⚜   Ссылка: '
+                           f'{variable[4]}\n🐯   /{variable[5]}/   -🌼-   дата '
+                           f'публикации: {variable[6]}   -🌻-   график работы: '
+                           f'{variable[7]}\n🚦   Количество откликов для '
+                           f'вакансии: {variable[8]}\n🚘   Адрес: '
+                           f'{variable[9]}\n')
+                else:
+                    yield (f'  {variable[0]}  '.center(107, '*') + f'\n\n🚮   '
+                           f'Профессия: {variable[1]}\n😍    Зарплата: '
+                           f'{variable[2]} - {variable[3]}\n⚜   Ссылка: '
+                           f'{variable[4]}\n🐯   дата публикации: {variable[5]}'
+                           f'   -🌻-   график работы: {variable[6]}\n🚘   '
+                           f'Адрес: {variable[7]}\n')
         except Exception as e:
             if str(e).find('no such table') != -1:
                 yield '\n\n' + '  Не было сохранений в базу  '.center(107, '*')
