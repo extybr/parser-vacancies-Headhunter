@@ -1,12 +1,12 @@
 from requests import get
-import os.path
-from database import Database
-from PyQt5 import QtWidgets
-from gui import UiMainWindow
-from write_csv import save_to_csv
-from write_xls import save_to_xls
+from pathlib import Path
 from datetime import date as dd
 from time import time
+from PyQt5 import QtWidgets
+from gui import UiMainWindow
+from database import Database
+from write_csv import save_to_csv
+from write_xls import save_to_xls
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -36,7 +36,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.checkbox_9_schedule = self.ui.checkbox_9.checkState()
         self.checkbox_10_schedule = self.ui.checkbox_10.checkState()
 
-    def set_state(self):
+    def set_state(self) -> None:
         """ Для запоминания состояний """
         self.text_vacancies = self.ui.lineEdit.displayText()
         self.text_period = self.ui.lineEdit_5.displayText()
@@ -57,7 +57,8 @@ class MyWin(QtWidgets.QMainWindow):
 
     def get_areas_id(self) -> None:
         """
-        Получение списка с сайта hh.ru
+        Получение списка с сайта hh.ru.
+        Не записывается и не запоминается.
         :return: None
         """
         from region_id import get_region
@@ -70,7 +71,7 @@ class MyWin(QtWidgets.QMainWindow):
         """
         _db = Database('hh')
         self.ui.textBrowser.clear()
-        if os.path.exists('_hh-trudvsem_.db'):
+        if Path.exists(Path('_hh-trudvsem_.db')):
             _output = _db.read_db()
             _count = 0
             for line in _output:
@@ -308,7 +309,7 @@ class MyWin(QtWidgets.QMainWindow):
         """
         _db = Database('trudvsem')
         self.ui.textBrowser_2.clear()
-        if os.path.exists('_hh-trudvsem_.db'):
+        if Path.exists(Path('_hh-trudvsem_.db')):
             _output = _db.read_db()
             _count = 0
             for line in _output:

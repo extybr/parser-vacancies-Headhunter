@@ -1,10 +1,10 @@
-import sys
-from parser import MyWin
+from sys import argv, exit
 from PyQt5 import QtWidgets
+from parser import MyWin
 
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication(argv)
     myapp = MyWin()
     myapp.show()
-    sys.exit(app.exec_())
+    exit(app.exec_())

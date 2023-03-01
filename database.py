@@ -1,5 +1,5 @@
 import sqlite3
-import os.path
+from pathlib import Path
 
 
 class Database:
@@ -41,7 +41,7 @@ class Database:
         Удаление таблицы с базы данных и создание новой таблицы.
         :return: None
         """
-        if os.path.exists(self.db):
+        if Path.exists(Path(self.db)):
             try:
                 self.command_database(self.command_drop)
             except Exception as e:
@@ -53,7 +53,7 @@ class Database:
         Создание базы данных и таблицы при ее отсутствии.
         :return: None
         """
-        if not [i for i in os.listdir('.') if i == self.db]:
+        if not Path.exists(Path(self.db)):
             # print('База данных отсутствует и будет создана')
             self.command_database(self.command_create)
 

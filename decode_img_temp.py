@@ -6,9 +6,11 @@ from tv_icon import icon as tv
 
 
 def decode_b64() -> tuple:
-    """ Переменные окружения.
+    """
+    Переменные окружения.
     Декодирование файла из base64.
-    Сохранение иконки """
+    Сохранение иконки
+    """
     pic_hh = 'hh.svg'
     pic_tv = 'trudvsem.png'
     try:

@@ -1,7 +1,8 @@
 from xlsxwriter import Workbook
 
 
-def save_to_xls(name, data):
+def save_to_xls(name: str, data: list) -> None:
+    """ Создание xlsx файла """
     workbook = Workbook(f'_{name}_.xlsx')
     worksheet = workbook.add_worksheet()
     worksheet.set_column('A:A', 40)
