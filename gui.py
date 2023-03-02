@@ -316,6 +316,16 @@ class UiMainWindow(object):
         self.pushButton_4.setToolTip(definition_readDB)
         font.setPixelSize(14)
         self.pushButton_4.setFont(font)
+        self.pushButton_6 = QtWidgets.QPushButton(self.tab_2)
+        self.pushButton_6.setGeometry(QtCore.QRect(685, 140, 15, 15))
+        self.pushButton_6.setCursor(QtGui.QCursor(QtCore.Qt.UpArrowCursor))
+        self.pushButton_6.setStyleSheet(
+            "color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);\n"
+            "border-style: outset; border-radius: 7px;border-color: red; "
+            "border-width: 2px;"
+        )
+        self.pushButton_6.setObjectName("pushButton_6")
+        self.pushButton_6.setToolTip('обновление списка online')
         self.label_21 = QtWidgets.QLabel(self.tab_2)
         self.label_21.setGeometry(QtCore.QRect(177, 125, 190, 30))
         font.setPixelSize(19)

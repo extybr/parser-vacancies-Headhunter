@@ -18,7 +18,8 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.pushButton_2.clicked.connect(self.read_hh)
         self.ui.pushButton_3.clicked.connect(self.extract_trudvsem)
         self.ui.pushButton_4.clicked.connect(self.read_trudvsem)
-        self.ui.pushButton_5.clicked.connect(self.get_areas_id)
+        self.ui.pushButton_5.clicked.connect(self.get_hh_areas_id)
+        self.ui.pushButton_6.clicked.connect(self.get_tv_areas_id)
         self.text_vacancies = self.ui.lineEdit.displayText()
         self.tv_vacancies = self.ui.lineEdit_20.displayText()
         self.text_period = self.ui.lineEdit_5.displayText()
@@ -55,14 +56,23 @@ class MyWin(QtWidgets.QMainWindow):
         self.tv_area = self.ui.lineEdit_21.displayText()
         self.tv_page_count = self.ui.lineEdit_22.displayText()
 
-    def get_areas_id(self) -> None:
+    def get_hh_areas_id(self) -> None:
         """
         Получение списка с сайта hh.ru.
         Не записывается и не запоминается.
         :return: None
         """
-        from region_id import get_region
-        self.ui.comboButton.addItems(['выбор региона'] + get_region())
+        from region_id import get_hh_region
+        self.ui.comboButton.addItems(['выбор региона'] + get_hh_region())
+
+    def get_tv_areas_id(self) -> None:
+        """
+        Получение списка с сайта trudvsem.ru.
+        Не записывается и не запоминается.
+        :return: None
+        """
+        from region_id import get_tv_region
+        self.ui.comboButton_2.addItems(['выбор региона'] + get_tv_region())
 
     def read_hh(self) -> None:
         """

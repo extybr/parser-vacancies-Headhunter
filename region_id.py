@@ -1,17 +1,17 @@
 from requests import get
 
 
-def recursion(result: list, rus: dict) -> list:
+def recursion_hh(result: list, rus: dict) -> list:
     """ Рекурсивный проход по структуре и возврат отсортированного списка """
     out = f"{rus.get('name', '0')}: {rus.get('id', '0')}"
     result.append(out)
     for area in rus.get('areas', '0'):
         if isinstance(area, dict):
-            recursion(result, area)
+            recursion_hh(result, area)
     return sorted(result)
 
 
-def get_region() -> list:
+def get_hh_region() -> list:
     """ Получение списка регионов """
     try:
         url = 'https://api.hh.ru/areas'
@@ -23,10 +23,39 @@ def get_region() -> list:
             'Connection': 'keep-alive'
         }
         results = get(url, headers).json()
-        return recursion([], results[0])
+        return recursion_hh([], results[0])
     except OSError as error:
         # print(f'Статус: проблемы с доступом в интернет\n{error}')
         from area import area_hh
         return area_hh
+    except Exception:
+        pass
+
+
+def recursion_tv(result: list, rus: dict) -> list:
+    """ Рекурсивный проход по структуре и возврат отсортированного списка """
+    for area in rus.get('regions', '0'):
+        out = f"{area.get('name', '0')}: {area.get('code', '0')[:2]}"
+        result.append(out)
+    return sorted(result)
+
+
+def get_tv_region() -> list:
+    """ Получение списка регионов """
+    try:
+        url = 'https://opendata.trudvsem.ru/json/regions.json'
+        headers = {
+            'Host': 'opendata.trudvsem.ru',
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive'
+        }
+        results = get(url, headers).json()
+        return recursion_tv([], results)
+    except OSError as error:
+        # print(f'Статус: проблемы с доступом в интернет\n{error}')
+        from area import area_trudvsem
+        return area_trudvsem
     except Exception:
         pass
