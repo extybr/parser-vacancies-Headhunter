@@ -390,7 +390,7 @@ class UiMainWindow(object):
         self.lineEdit_21.setFont(font)
         self.lineEdit_21.setStyleSheet("background-color: rgb(170, 255, 255);")
         self.lineEdit_21.setObjectName("lineEdit_21")
-        self.lineEdit_21.setText('27')
+        self.lineEdit_21.setText('')
         self.lineEdit_21.setValidator(QtGui.QIntValidator(0, 10000,
                                                           main_window))
         self.lineEdit_21.setToolTip(str(area_trudvsem))
@@ -408,7 +408,7 @@ class UiMainWindow(object):
         self.lineEdit_23.setStyleSheet("background-color: rgb(170, 255, 255);")
         self.lineEdit_23.setObjectName("lineEdit_23")
         self.lineEdit_23.setText('30')
-        self.lineEdit_23.setValidator(QtGui.QIntValidator(0, 1000, main_window))
+        self.lineEdit_23.setValidator(QtGui.QIntValidator(0, 10, main_window))
         self.lineEdit_23.setToolTip(definition_days[1:-3] + '99')
         self.spinBox_2 = QtWidgets.QSpinBox(self.tab_2)
         self.spinBox_2.setGeometry(QtCore.QRect(40, 73, 60, 40))

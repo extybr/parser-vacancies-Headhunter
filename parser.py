@@ -301,6 +301,8 @@ class MyWin(QtWidgets.QMainWindow):
                 self.ui.textBrowser.append(
                     '\n\n\n' + '  Статус: не хватает прав доступа создания '
                                'лог файла (базы данных)  '.center(130, '-'))
+        except Exception:
+            pass
 
     def read_trudvsem(self) -> None:
         """
@@ -329,12 +331,12 @@ class MyWin(QtWidgets.QMainWindow):
             _db.drop_database()
             _db.initialize_database()
         try:
-            text_profession = f'&text={self.ui.lineEdit_20.displayText()}'
+            text_profession = f'text={self.ui.lineEdit_20.displayText()}'
             if self.ui.comboButton_2.currentText() != 'выбор региона':
                 self.ui.lineEdit_21.setText(
                     self.ui.comboButton_2.currentText().split(': ')[1])
-            region = f'/region/{self.ui.lineEdit_21.displayText()}00000000000'\
-                if len(self.ui.lineEdit_21.displayText()) > 0 else ''
+            region = (f'/region/{self.ui.lineEdit_21.displayText()}00000000000'
+                      if len(self.ui.lineEdit_21.displayText()) > 0 else '')
 
             day = int(self.ui.lineEdit_23.displayText())
             pd = dd.fromtimestamp(time() - 86400 * day)
@@ -423,7 +425,15 @@ class MyWin(QtWidgets.QMainWindow):
                     pdf = QtGui.QPdfWriter('_trudvsem_.pdf')
                     self.ui.textBrowser_2.print(pdf)
         except OSError as error:
-            # print(f'Статус: проблемы с доступом в интернет\n{error}')
-            self.ui.textBrowser_2.append(
-                '\n\n\n' + '  Статус: не хватает прав доступа создания '
-                           'лог файла (базы данных)  '.center(130, '-'))
+            if str(error).find('HTTPSConnection') != -1:
+                # print(f'Статус: проблемы с доступом в интернет\n{error}')
+                self.ui.textBrowser_2.append('\n\n\n' +
+                                           '  Статус: проблемы с доступом в '
+                                           'интернет  '.center(142, '-'))
+            else:
+                # print(f'Статус: не хватает прав доступа\n{error}')
+                self.ui.textBrowser_2.append(
+                    '\n\n\n' + '  Статус: не хватает прав доступа создания '
+                               'лог файла (базы данных)  '.center(130, '-'))
+        except Exception:
+            pass
