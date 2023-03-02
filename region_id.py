@@ -26,4 +26,7 @@ def get_region() -> list:
         return recursion([], results[0])
     except OSError as error:
         # print(f'Статус: проблемы с доступом в интернет\n{error}')
+        from area import area_hh
+        return area_hh
+    except Exception:
         pass
