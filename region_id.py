@@ -32,14 +32,6 @@ def get_hh_region() -> list:
         pass
 
 
-def recursion_tv(result: list, rus: dict) -> list:
-    """ Рекурсивный проход по структуре и возврат отсортированного списка """
-    for area in rus.get('regions', '0'):
-        out = f"{area.get('name', '0')}: {area.get('code', '0')[:2]}"
-        result.append(out)
-    return sorted(result)
-
-
 def get_tv_region() -> list:
     """ Получение списка регионов """
     try:
@@ -52,7 +44,11 @@ def get_tv_region() -> list:
             'Connection': 'keep-alive'
         }
         results = get(url, headers).json()
-        return recursion_tv([], results)
+        result = []
+        for area in results.get('regions', '0'):
+            out = f"{area.get('name', '0')}: {area.get('code', '0')[:2]}"
+            result.append(out)
+        return sorted(result)
     except OSError as error:
         # print(f'Статус: проблемы с доступом в интернет\n{error}')
         from area import area_trudvsem
