@@ -63,6 +63,7 @@ class MyWin(QtWidgets.QMainWindow):
         :return: None
         """
         from region_id import get_hh_region
+        self.ui.comboButton.clear()
         self.ui.comboButton.addItems(['выбор региона'] + get_hh_region())
 
     def get_tv_areas_id(self) -> None:
@@ -72,6 +73,7 @@ class MyWin(QtWidgets.QMainWindow):
         :return: None
         """
         from region_id import get_tv_region
+        self.ui.comboButton_2.clear()
         self.ui.comboButton_2.addItems(['выбор региона'] + get_tv_region())
 
     def read_database(self, name, index) -> None:
@@ -87,7 +89,7 @@ class MyWin(QtWidgets.QMainWindow):
             _output = _db.read_db()
             _count = 0
             for line in _output:
-                browser.append(line)
+                browser.append(f'<html>{line}</html>')
                 _count += 1
             lcd.display(_count)
             browser.scrollToAnchor("scroll")
@@ -121,9 +123,11 @@ class MyWin(QtWidgets.QMainWindow):
         if self.ui.comboButton.currentText() != 'выбор региона':
             self.ui.lineEdit_2.setText(
                 self.ui.comboButton.currentText().split(': ')[1])
+
         page = self.ui.spinBox.value()
         if page == 0:
             self.set_state()
+
         hold_state = [self.text_vacancies, self.text_period,
                       self.text_professional_role, self.text_area,
                       self.text_industry, self.text_page_count,
@@ -145,6 +149,7 @@ class MyWin(QtWidgets.QMainWindow):
         if [i for i in zip(hold_state, current_state) if i[0] != i[1]]:
             page = 0
             self.set_state()
+
         count = self.ui.lineEdit_4.displayText()
         area = self.ui.lineEdit_2.displayText()
         checkbox = [self.ui.checkbox_6.isChecked(),
@@ -195,6 +200,7 @@ class MyWin(QtWidgets.QMainWindow):
             if self.ui.checkbox_3.isChecked():
                 with open('_hh_.txt', 'w', encoding='utf-8') as text:
                     text.write(f'Найдено результатов: {count_results}\n\n')
+
             items = results.get('items', {})
             for index in items:
                 company = index['employer']['name']
@@ -208,7 +214,7 @@ class MyWin(QtWidgets.QMainWindow):
                 if index['address']:
                     address = index['address']['raw']
                 # logo = index['employer']['logo_urls']['90']
-                salary = index['salary']
+
                 information = ''
                 if self.ui.radioButton.isChecked():
                     count_vacancies = ''
@@ -217,98 +223,101 @@ class MyWin(QtWidgets.QMainWindow):
 
                         def get_count_vacancies(company_number: str, header: dict) -> str:
                             url_id = f'https://api.hh.ru/employers/{company_number}'
-                            counter = ('\n🚷   Всего количество вакансий у '
-                                       'компании: ' + str(get(url_id, header).json(
-                            ).get('open_vacancies', 0)) + '\n')
+                            cnt = str(get(url_id, header).json().get('open_vacancies', 0))
+                            counter = (f'🚷   Всего количество вакансий у '
+                                       f'компании: {cnt}')
                             return counter
 
                         count_vacancies = get_count_vacancies(company_id, headers)
-                    requirement = str(index['snippet']['requirement']).replace(
-                        '<highlighttext>', '*')
-                    requirement = str(requirement).replace('</highlighttext>', '*')
-                    responsibility = str(index['snippet']['requirement']).replace(
-                        '<highlighttext>', '*')
-                    responsibility = str(responsibility).replace('</highlighttext>', '*')
+                    requirement = index['snippet']['requirement']
+                    responsibility = index['snippet']['responsibility']
                     information = (
-                            f'\n🐵   Отрывок из требований по вакансии: '
-                            f'{requirement}\n🐼   Отрывок из обязанностей по '
-                            f'вакансии: {responsibility}\n' + count_vacancies
+                        f'<p align=center><br>🐵   Отрывок из требований'
+                        f' по вакансии: {requirement}<br>🐼   Отрывок из '
+                        f'обязанностей по вакансии: {responsibility}<br>'
+                        f'{count_vacancies}</p>'
                     )
+
+                salary = index['salary']
+                from_salary, to_salary = 'не указана', 'не указана'
                 if salary:
                     from_salary = (salary['from']
                                    if isinstance(salary['from'], int) else '😜')
                     to_salary = (salary['to']
                                  if isinstance(salary['to'], int) else '🚀')
-                    output = (
-                            f'  {company}  '.center(107, '*') + f'\n\n🚮   '
-                            f'Профессия: {name}\n😍   Зарплата: {from_salary} '
-                            f'- {to_salary}\n⚜   Ссылка: {link}\n🐯   /{types}/'
-                            f'   -🌼-   дата публикации: {date}   -🌻-   '
-                            f'график работы: {schedule}\n🚦   Количество'
-                            f' откликов для вакансии: {counters_responses}\n🚘'
-                            f'   Адрес: {address}\n{information}'
-                    )
-                    # print(output)
-                    self.ui.textBrowser.append(output)
-                    if self.ui.checkbox_3.isChecked():
-                        text = open('_hh_.txt', 'a', encoding='utf-8')
-                        text.write(output.center(120, '*') + '\n')
-                    if self.ui.checkbox_4.isChecked():
-                        _db.insert_hh(company, name, str(from_salary),
-                                      str(to_salary), link, types, date,
-                                      schedule.lower(), counters_responses,
-                                      address)
-                    if self.ui.checkbox_11.isChecked():
-                        salary_from = (salary['from']
-                                       if isinstance(salary['from'], int) else '*')
-                        salary_to = (salary['to']
-                                     if isinstance(salary['to'], int) else '*')
-                        save_csv.append([company, name, salary_from, salary_to,
-                                         link, types, date, schedule,
-                                         counters_responses, address])
-                    if self.ui.checkbox_12.isChecked():
-                        save_xls.append([company, name, from_salary, to_salary,
-                                         link, types, date, schedule,
-                                         counters_responses, address])
-                else:
-                    output = (
-                            f'  {company}  '.center(107, '*') + f'\n\n🚮   '
-                            f'Профессия: {name}\n😍   Зарплата: не указана\n'
-                            f'⚜   Ссылка: {link}\n🐯   /{types}/   -🌼-   '
-                            f'дата публикации: {date}   -🌻-   график работы: '
-                            f'{schedule}\n🚦   Количество откликов для '
-                            f'вакансии: {counters_responses}\n🚘   Адрес: '
-                            f'{address}\n{information}'
-                    )
-                    # print(output)
-                    self.ui.textBrowser.append(output)
-                    if self.ui.checkbox_3.isChecked():
-                        text = open('_hh_.txt', 'a', encoding='utf-8')
-                        text.write(output.center(120, '*') + '\n')
-                    if self.ui.checkbox_4.isChecked():
-                        _db.insert_hh(company, name, 'не указана',
-                                      'не указана', link, types, date,
-                                      schedule, counters_responses, address)
-                    if self.ui.checkbox_11.isChecked():
-                        save_csv.append([company, name, 'не указана',
-                                         'не указана', link, types, date,
-                                         schedule, counters_responses, address])
-                    if self.ui.checkbox_12.isChecked():
-                        save_xls.append([company, name, 'не указана',
-                                         'не указана', link, types, date,
-                                         schedule, counters_responses, address])
-                # self.ui.textBrowser.append("<a name=\"scroll\" href=\"\">۩</a>")
+                salary_full = (f'{from_salary} - {to_salary}'
+                               if (from_salary and to_salary) != 'не указана'
+                               else 'не указана')
+
+                html = (f'<p align="center"><font color=#027132>'
+                        f'<h3><b>{company}</b></h3></font>'
+                        f'<ul><br>🚮   Профессия: <b>{name}</b></br>'
+                        f'<br>😍   Зарплата: <b>{salary_full}</b></br>'
+                        f'<br>⚜   Ссылка: <a href="{link}">{link}</a></br>'
+                        f'<br>🐯   /{types}/   -🌼-   дата публикации: '
+                        f'<b>{date}</b>   -🌻-   график работы: <b>'
+                        f'{schedule}</b></br>'
+                        f'<br>🚦   Количество откликов для вакансии: '
+                        f'{counters_responses}</br>'
+                        f'<br>🚘   Адрес: {address}</br></ul></p>')
+                if not self.ui.checkbox_13.isChecked():
+                    html = html.replace('</font>', '</font></p>')
+                if information:
+                    html += information
+                self.ui.textBrowser.append(html)
+                sign = ''.center(100, '*')
+                self.ui.textBrowser.append(f'<html>{sign}</html>')
+
+                output = (
+                        f'  {company}  '.center(107, '*') + f'\n\n🚮   '
+                        f'Профессия: {name}\n😍   Зарплата: {salary_full}\n'
+                        f'⚜   Ссылка: {link}\n🐯   /{types}/'
+                        f'   -🌼-   дата публикации: {date}   -🌻-   '
+                        f'график работы: {schedule}\n🚦   Количество'
+                        f' откликов для вакансии: {counters_responses}\n🚘'
+                        f'   Адрес: {address}\n{information}'
+                )
+                # print(output)
+                if self.ui.checkbox_3.isChecked():
+                    text = open('_hh_.txt', 'a', encoding='utf-8')
+                    text.write(output.center(120, '*') + '\n')
+
+                if self.ui.checkbox_4.isChecked():
+                    _db.insert_hh(company, name, str(from_salary),
+                                  str(to_salary), link, types, date,
+                                  schedule, counters_responses, address)
+
+                if self.ui.checkbox_12.isChecked():
+                    save_xls.append([company, name, from_salary, to_salary,
+                                     link, types, date, schedule,
+                                     counters_responses, address])
+
+                if self.ui.checkbox_11.isChecked():
+                    if salary:
+                        from_salary = (salary['from'] if isinstance(
+                            salary['from'], int) else '*')
+                        to_salary = (salary['to'] if isinstance(
+                            salary['to'], int) else '*')
+                    save_csv.append([company, name, from_salary, to_salary,
+                                     link, types, date, schedule,
+                                     counters_responses, address])
+
             if self.ui.checkbox_3.isChecked():
                 text.close()
+
             if self.ui.checkbox_11.isChecked():
                 save_to_csv('hh', save_csv)
+
             if self.ui.checkbox_12.isChecked():
                 save_to_xls('hh', save_xls)
+
             if self.ui.checkbox_5.isChecked():
                 from PyQt5 import QtGui
                 pdf = QtGui.QPdfWriter('_hh_.pdf')
                 self.ui.textBrowser.print(pdf)
+
             self.ui.textBrowser.scrollToAnchor("scroll")
+
         except OSError as error:
             if str(error).find('HTTPSConnection') != -1:
                 # print(f'Статус: проблемы с доступом в интернет\n{error}')
@@ -396,31 +405,45 @@ class MyWin(QtWidgets.QMainWindow):
                                    if vacancy['salary_min'] != 0 else '😜')
                     to_salary = (vacancy['salary_max']
                                  if vacancy['salary_max'] != 0 else '🚀')
-                    output = (
-                            f'  {company}  '.center(107, '*') + f'\n\n🚮   '
-                            f'Профессия: {name}\n😍   Зарплата: '
-                            f'{from_salary} - {to_salary}\n⚜   Ссылка: '
-                            f'{link}\n🐯   дата публикации: {date}   -🌻-'
-                            f'   график работы: {schedule}\n🚘   '
-                            f'Адрес: {address}\n'
-                    )
-                    # print(output)
-                    self.ui.textBrowser_2.append(output)
+                    salary_full = ('{} - {}'.format(from_salary, to_salary)
+                                   if not (
+                            from_salary == '😜' and to_salary == '🚀')
+                                   else 'не указана')
+
+                    html = (f'<p align="center"><font color=#027132>'
+                            f'<b>{company}</b></font>'
+                            f'<ul><br><br>🚮   Профессия: <b>{name}</b></br>'
+                            f'<br>😍   Зарплата: <b>{salary_full}</b></br>'
+                            f'<br>⚜   Ссылка: <a href="{link}">{link}</a></br>'
+                            f'<br>🐯   дата публикации: {date}   -🌻-   '
+                            f'график работы: <b>{schedule}</b></br>'
+                            f'<br>🚘   Адрес: {address}</br></p></ul>')
+                    if not self.ui.checkbox_27.isChecked():
+                        html = html.replace('</font>', '</font></p>')
+                    self.ui.textBrowser_2.append(html)
+                    sign = ''.center(100, '*')
+                    self.ui.textBrowser_2.append(f'<html>{sign}</html>')
+
                     if self.ui.checkbox_24.isChecked():
                         _db.insert_trudvsem(company, name, str(from_salary),
                                             str(to_salary), link, date,
                                             schedule, address)
+
                     if self.ui.checkbox_26.isChecked():
                         save_xls.append([company, name, str(from_salary),
                                          str(to_salary), link, date,
                                          schedule, address])
+
                 if self.ui.checkbox_26.isChecked():
                     save_to_xls('trudvsem', save_xls)
+
                 if self.ui.checkbox_25.isChecked():
                     from PyQt5 import QtGui
                     pdf = QtGui.QPdfWriter('_trudvsem_.pdf')
                     self.ui.textBrowser_2.print(pdf)
+
             self.ui.textBrowser_2.scrollToAnchor("scroll")
+
         except OSError as error:
             if str(error).find('HTTPSConnection') != -1:
                 # print(f'Статус: проблемы с доступом в интернет\n{error}')

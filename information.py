@@ -161,3 +161,15 @@ definition_shift = """
 definition_flexible = """
 Гибкий график
 """
+count_vacancies = """
+Количество специальностей у компании
+"""
+sort_date = """
+Сортировка по дате
+"""
+additional_information = """
+Дополнительная информация
+"""
+center = """
+Центровка текста
+"""

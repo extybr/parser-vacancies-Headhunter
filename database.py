@@ -115,21 +115,23 @@ class Database:
             data = cursor.execute(self.command_read)
             for variable in data:
                 if self.name == 'hh':
-                    yield (f'  {variable[0]}  '.center(107, '*') + f'\n\n🚮   '
-                           f'Профессия: {variable[1]}\n😍   Зарплата: '
-                           f'{variable[2]} - {variable[3]}\n⚜   Ссылка: '
-                           f'{variable[4]}\n🐯   /{variable[5]}/   -🌼-   дата '
-                           f'публикации: {variable[6]}   -🌻-   график работы: '
-                           f'{variable[7]}\n🚦   Количество откликов для '
-                           f'вакансии: {variable[8]}\n🚘   Адрес: '
-                           f'{variable[9]}\n')
+                    yield (f'  <i>{variable[0]}</i>  '.center(113, '*') +
+                           f'<p>🚮   Профессия: <b>{variable[1]}</b>'
+                           f'<br>😍   Зарплата: <b>{variable[2]} - '
+                           f'{variable[3]}</b><br>⚜   Ссылка: {variable[4]}'
+                           f'<br>🐯   /{variable[5]}/   -🌼-   дата публикации:'
+                           f' <b>{variable[6]}</b>   -🌻-   '
+                           f'график работы: <b>{variable[7]}</b>'
+                           f'<br>🚦   Количество откликов для вакансии: '
+                           f'{variable[8]}<br>🚘   Адрес: {variable[9]}<br>')
                 else:
-                    yield (f'  {variable[0]}  '.center(107, '*') + f'\n\n🚮   '
-                           f'Профессия: {variable[1]}\n😍    Зарплата: '
-                           f'{variable[2]} - {variable[3]}\n⚜   Ссылка: '
-                           f'{variable[4]}\n🐯   дата публикации: {variable[5]}'
-                           f'   -🌻-   график работы: {variable[6]}\n🚘   '
-                           f'Адрес: {variable[7]}\n')
+                    yield (f'  <i>{variable[0]}</i>  '.center(113, '*') +
+                           f'<p>🚮   Профессия: <b>{variable[1]}</b>'
+                           f'<br>😍    Зарплата: <b>{variable[2]} - '
+                           f'{variable[3]}</b><br>⚜   Ссылка: {variable[4]}'
+                           f'<br>🐯   дата публикации: {variable[5]}'
+                           f'   -🌻-   график работы: <b>{variable[6]}</b>'
+                           f'<br>🚘   Адрес: {variable[7]}<br>')
         except Exception as e:
             if str(e).find('no such table') != -1:
                 yield '\n\n' + '  Не было сохранений в базу  '.center(107, '*')
