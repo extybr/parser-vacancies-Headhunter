@@ -349,7 +349,7 @@ class MyWin(QtWidgets.QMainWindow):
 
             day = int(self.ui.lineEdit_23.displayText())
             pd = dd.fromtimestamp(time() - 86400 * day)
-            period = (f'&modifiedFrom={pd}T08:00:00Z'
+            period = (f'&modifiedFrom={pd}T00:00:00Z'
                       if len(self.ui.lineEdit_23.displayText()) > 0 else '')
 
             page_count = (f'&limit={self.ui.lineEdit_22.displayText()}'
