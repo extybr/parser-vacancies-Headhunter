@@ -134,5 +134,6 @@ class Database:
                            f'<br>🚘   Адрес: {variable[7]}<br>')
         except Exception as e:
             if str(e).find('no such table') != -1:
-                yield '\n\n' + '  Не было сохранений в базу  '.center(107, '*')
+                yield ('<br><p align="center"><h4>Не было сохранений в '
+                       'базу</h4></p></br>')
             pass
