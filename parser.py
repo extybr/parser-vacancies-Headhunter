@@ -1,4 +1,4 @@
-from requests import get
+from requests import get as rg
 from pathlib import Path
 from datetime import date as dd
 from time import time
@@ -22,8 +22,8 @@ def errors(function):
                 # print(f'Статус: не хватает прав доступа\n{error}')
                 return ('\n\n\n' + '  Статус: не хватает прав доступа создания '
                                    'лог файла (базы данных)  '.center(130, '-'))
-        except Exception:
-            pass
+        except Exception as error:
+            return f'<b>{error}</b>'
     return wrapper
 
 
@@ -215,7 +215,7 @@ class MyWin(QtWidgets.QMainWindow):
         save_csv, save_xls = [], []
 
         # print('Headhunter: парсинг страницы')
-        result = get(url, headers)
+        result = rg(url, headers)
         results = result.json()
         count_results = results.get('found')
         # print('Найдено результатов:', count_results)
@@ -224,15 +224,18 @@ class MyWin(QtWidgets.QMainWindow):
         if self.ui.checkbox_3.isChecked():
             with open('_hh_.txt', 'w', encoding='utf-8') as text:
                 text.write(f'Найдено результатов: {count_results}\n\n')
-
         items = results.get('items', {})
         for index in items:
             company = index['employer']['name']
             name = index['name']
             link = index["alternate_url"]
             types = index['type']['name']
-            counters_responses = index['counters']['responses']
-            schedule = index['schedule']['name'].lower()
+            counters_responses = 'X'
+            if index['counters']:
+                counters_responses = index['counters']['responses']
+            schedule = 'X'
+            if index['schedule']:
+                schedule = index['schedule']['name'].lower()
             date = index['published_at'][:10]
             address = index['area']['name']
             if index['address']:
@@ -248,7 +251,8 @@ class MyWin(QtWidgets.QMainWindow):
 
                     def get_count_vacancies(company_number: str, header: dict) -> str:
                         url_id = f'https://api.hh.ru/employers/{company_number}'
-                        cnt = str(get(url_id, header).json().get('open_vacancies', 0))
+                        cnt = str(rg(url_id, header).json().get(
+                            'open_vacancies', 0))
                         counter = (f'🚷   Всего количество вакансий у '
                                    f'компании: {cnt}')
                         return counter
@@ -263,7 +267,7 @@ class MyWin(QtWidgets.QMainWindow):
                     f'{count_vacancies}</p>'
                 )
 
-            salary = index['salary']
+            salary = index.get('salary', 0)
             from_salary, to_salary = 'не указана', 'не указана'
             if salary:
                 from_salary = (salary['from']
@@ -396,7 +400,7 @@ class MyWin(QtWidgets.QMainWindow):
             page = int(page) + 1
             self.ui.spinBox_2.setValue(page)
 
-        result = get(url, headers)
+        result = rg(url, headers)
         results = result.json()
         count_vacancies = results.get('meta').get('total', 0)
         vacancies = results.get('results', 0).get('vacancies', {})
