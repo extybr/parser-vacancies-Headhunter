@@ -7,6 +7,7 @@ from gui import UiMainWindow
 from database import Database
 from write_csv import save_to_csv
 from write_xls import save_to_xls
+from threading import Thread
 
 
 def errors(function):
@@ -25,6 +26,12 @@ def errors(function):
         except Exception as error:
             return f'<b>{error}</b>'
     return wrapper
+
+
+def thread(fn):
+    def execute(*args, **kwargs):
+        Thread(target=fn, args=args, kwargs=kwargs).start()
+    return execute
 
 
 class MyWin(QtWidgets.QMainWindow):
@@ -74,25 +81,41 @@ class MyWin(QtWidgets.QMainWindow):
         self.tv_area = self.ui.lineEdit_21.displayText()
         self.tv_page_count = self.ui.lineEdit_22.displayText()
 
-    def get_hh_areas_id(self) -> None:
+    @thread
+    def _get_hh_areas_id(self) -> None:
         """
         Получение списка с сайта hh.ru.
         Не записывается и не запоминается.
         :return: None
         """
         from region_id import get_hh_region
-        self.ui.comboButton.clear()
-        self.ui.comboButton.addItems(['выбор региона'] + get_hh_region())
+        _region = get_hh_region()
+        if _region:
+            self.ui.comboButton.clear()
+            self.ui.comboButton.addItems(['выбор региона'] + _region)
 
-    def get_tv_areas_id(self) -> None:
+    def get_hh_areas_id(self) -> None:
+        self.ui.comboButton.clear()
+        self.ui.comboButton.addItems(['подождите, идет загрузка списка...'])
+        self._get_hh_areas_id()
+
+    @thread
+    def _get_tv_areas_id(self) -> None:
         """
         Получение списка с сайта trudvsem.ru.
         Не записывается и не запоминается.
         :return: None
         """
         from region_id import get_tv_region
+        _region = get_tv_region()
+        if _region:
+            self.ui.comboButton_2.clear()
+            self.ui.comboButton_2.addItems(['выбор региона'] + _region)
+
+    def get_tv_areas_id(self) -> None:
         self.ui.comboButton_2.clear()
-        self.ui.comboButton_2.addItems(['выбор региона'] + get_tv_region())
+        self.ui.comboButton_2.addItems(['подождите, идет загрузка списка...'])
+        self._get_tv_areas_id()
 
     def read_database(self, name, index) -> None:
         """
