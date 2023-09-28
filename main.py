@@ -1,6 +1,6 @@
 from sys import argv, exit
 from PyQt5 import QtWidgets
-from parser import MyWin
+from parser_module.parser import MyWin
 
 
 if __name__ == "__main__":

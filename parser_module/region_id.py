@@ -1,4 +1,4 @@
-from requests import get
+from httpx import get
 
 
 def recursion_hh(result: list, rus: dict) -> list:
@@ -22,11 +22,11 @@ def get_hh_region() -> list:
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive'
         }
-        results = get(url, headers).json()
+        results = get(url, headers=headers).json()
         return recursion_hh([], results[0])
     except OSError as error:
         # print(f'Статус: проблемы с доступом в интернет\n{error}')
-        from area import area_hh
+        from info_module.area import area_hh
         return area_hh
     except Exception:
         pass
@@ -43,7 +43,7 @@ def get_tv_region() -> list:
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive'
         }
-        results = get(url, headers).json()
+        results = get(url, headers=headers).json()
         result = []
         for area in results.get('regions', '0'):
             out = f"{area.get('name', '0')}: {area.get('code', '0')[:2]}"
@@ -51,7 +51,7 @@ def get_tv_region() -> list:
         return sorted(result)
     except OSError as error:
         # print(f'Статус: проблемы с доступом в интернет\n{error}')
-        from area import area_trudvsem
+        from info_module.area import area_trudvsem
         return area_trudvsem
     except Exception:
         pass

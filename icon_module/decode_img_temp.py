@@ -1,8 +1,8 @@
 from base64 import decodebytes
 from pathlib import Path
 from tempfile import gettempdir
-from hh_icon import icon as hh
-from tv_icon import icon as tv
+from icon_module.hh_icon import icon as hh
+from icon_module.tv_icon import icon as tv
 
 
 def decode_b64() -> tuple:

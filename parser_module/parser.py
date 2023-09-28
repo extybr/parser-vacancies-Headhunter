@@ -1,12 +1,12 @@
-from requests import get as rg
+from httpx import get as rg, HTTPError
 from pathlib import Path
 from datetime import date as dd
 from time import time
 from PyQt5 import QtWidgets
-from gui import UiMainWindow
-from database import Database
-from write_csv import save_to_csv
-from write_xls import save_to_xls
+from interface_module.gui import UiMainWindow
+from save_module.database import Database
+from save_module.write_csv import save_to_csv
+from save_module.write_xls import save_to_xls
 from threading import Thread
 
 
@@ -14,15 +14,15 @@ def errors(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
-        except OSError as error:
-            if str(error).find('HTTPSConnection') != -1:
+        except HTTPError as error:
+            if str(error).find('getaddrinfo failed') != -1:
                 # print(f'Статус: проблемы с доступом в интернет\n{error}')
                 return ('\n\n\n' + '  Статус: проблемы с доступом в '
                                    'интернет  '.center(142, '-'))
-            else:
-                # print(f'Статус: не хватает прав доступа\n{error}')
-                return ('\n\n\n' + '  Статус: не хватает прав доступа создания '
-                                   'лог файла (базы данных)  '.center(130, '-'))
+        except OSError as error:
+            # print(f'Статус: не хватает прав доступа\n{error}')
+            return ('\n\n\n' + '  Статус: не хватает прав доступа создания '
+                               'лог файла (базы данных)  '.center(130, '-'))
         except Exception as error:
             return f'<b>{error}</b>'
     return wrapper
@@ -88,7 +88,7 @@ class MyWin(QtWidgets.QMainWindow):
         Не записывается и не запоминается.
         :return: None
         """
-        from region_id import get_hh_region
+        from parser_module.region_id import get_hh_region
         _region = get_hh_region()
         if _region:
             self.ui.comboButton.clear()
@@ -106,7 +106,7 @@ class MyWin(QtWidgets.QMainWindow):
         Не записывается и не запоминается.
         :return: None
         """
-        from region_id import get_tv_region
+        from parser_module.region_id import get_tv_region
         _region = get_tv_region()
         if _region:
             self.ui.comboButton_2.clear()
@@ -238,9 +238,9 @@ class MyWin(QtWidgets.QMainWindow):
         save_csv, save_xls = [], []
 
         # print('Headhunter: парсинг страницы')
-        result = rg(url, headers)
+        result = rg(url, headers=headers)
         results = result.json()
-        count_results = results.get('found')
+        count_results = results.get('found', 0)
         # print('Найдено результатов:', count_results)
         # print('\n' + '*' * 150 + '\n')
         self.ui.lcdNumber.display(count_results)
@@ -253,15 +253,15 @@ class MyWin(QtWidgets.QMainWindow):
             name = index['name']
             link = index["alternate_url"]
             types = index['type']['name']
-            counters_responses = 'X'
-            if index['counters']:
+            counters_responses = '-'
+            if index.get('counters'):
                 counters_responses = index['counters']['responses']
-            schedule = 'X'
-            if index['schedule']:
+            schedule = '-'
+            if index.get('schedule'):
                 schedule = index['schedule']['name'].lower()
             date = index['published_at'][:10]
             address = index['area']['name']
-            if index['address']:
+            if index.get('address'):
                 if index['address']['raw']:
                     address = index['address']['raw']
             # logo = index['employer']['logo_urls']['90']
@@ -274,7 +274,7 @@ class MyWin(QtWidgets.QMainWindow):
 
                     def get_count_vacancies(company_number: str, header: dict) -> str:
                         url_id = f'https://api.hh.ru/employers/{company_number}'
-                        cnt = str(rg(url_id, header).json().get(
+                        cnt = str(rg(url_id, headers=headers).json().get(
                             'open_vacancies', 0))
                         counter = (f'🚷   Всего количество вакансий у '
                                    f'компании: {cnt}')
@@ -423,7 +423,7 @@ class MyWin(QtWidgets.QMainWindow):
             page = int(page) + 1
             self.ui.spinBox_2.setValue(page)
 
-        result = rg(url, headers)
+        result = rg(url, headers=headers)
         results = result.json()
         count_vacancies = results.get('meta').get('total', 0)
         vacancies = results.get('results', 0).get('vacancies', {})

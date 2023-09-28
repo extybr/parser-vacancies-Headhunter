@@ -2,8 +2,8 @@
 
 ## Windows:
 ### pyinstaller
-     pyinstaller main.py -F -w --i=favicon.ico
+     pyinstaller main.py -F -w --i=img/favicon.ico
 ### nuitka
-     python -m nuitka --windows-disable-console --onefile --follow-imports --enable-plugin=pyqt5 --windows-icon-from-ico=favicon.ico main.py
+     python -m nuitka --windows-disable-console --onefile --follow-imports --enable-plugin=pyqt5 --windows-icon-from-ico=img/favicon.ico main.py
 
-<img src="preview.jpg" height="400">
+<img src="img/preview.jpg" height="400">

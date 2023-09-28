@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from information import *
-from decode_img_temp import decode_b64
-from area import area_hh, area_trudvsem
+from info_module.information import *
+from icon_module.decode_img_temp import decode_b64
+from info_module.area import area_hh, area_trudvsem
 
 
 class UiMainWindow(object):
